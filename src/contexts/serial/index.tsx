@@ -1,4 +1,4 @@
-import {FC, createContext, useContext, useRef, useMemo, useEffect, useCallback} from 'react'
+import React, {FC, createContext, useContext, useRef, useMemo, useEffect, useCallback} from 'react'
 import {Subject, Subscription} from 'rxjs'
 import {DeviceEventEmitter} from 'react-native'
 import {actions, RNSerialport, definitions, ReturnedDataTypes} from 'react-native-serialport'
