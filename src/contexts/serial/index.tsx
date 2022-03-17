@@ -4,7 +4,7 @@ import {DeviceEventEmitter} from 'react-native'
 import {actions, RNSerialport, definitions, ReturnedDataTypes} from 'react-native-serialport'
 
 import {SerialManager, Props, SerialEvent} from './types'
-import {BAUD_RATE, INTERFACE} from './constants'
+import {BAUD_RATE, INTERFACE, VENDOR_ID, PRODUCT_ID} from './constants'
 
 const SerialContext = createContext<SerialManager>({
   subscribe: () => {
@@ -30,6 +30,27 @@ export const SerialProvider: FC<Props> = (props) => {
 
   const handleOnDeviceAttached = useCallback<() => void>(() => {
     usbAttached.current = true
+
+    RNSerialport.getDeviceList()
+      .then((devices) => {
+        devices?.forEach((device) => {
+          const {vendorId, productId, name} = device
+
+          if (VENDOR_ID !== vendorId || PRODUCT_ID !== productId) {
+            return
+          }
+
+          RNSerialport.isOpen().then((opened) => {
+            if (opened) {
+              RNSerialport.disconnect()
+            }
+            RNSerialport.connectDevice(name, BAUD_RATE)
+          })
+        })
+      })
+      .catch((e) => {
+        console.log('getDeviceList failed', e)
+      })
   }, [])
 
   const handleOnDeviceDetached = useCallback<() => void>(() => {
@@ -102,9 +123,9 @@ export const SerialProvider: FC<Props> = (props) => {
 
   useEffect(() => {
     RNSerialport.setReturnedDataType(definitions.RETURNED_DATA_TYPES.INTARRAY as ReturnedDataTypes)
-    RNSerialport.setAutoConnectBaudRate(BAUD_RATE)
+    // RNSerialport.setAutoConnectBaudRate(BAUD_RATE)
     RNSerialport.setInterface(INTERFACE)
-    RNSerialport.setAutoConnect(true)
+    RNSerialport.setAutoConnect(false)
     RNSerialport.startUsbService()
 
     return () => {
