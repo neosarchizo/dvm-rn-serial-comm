@@ -2,6 +2,7 @@ import React, {FC, createContext, useContext, useRef, useMemo, useEffect, useCal
 import {Subject, Subscription} from 'rxjs'
 import {DeviceEventEmitter} from 'react-native'
 import {actions, RNSerialport, definitions, ReturnedDataTypes} from 'react-native-serialport'
+import {Buffer} from 'buffer'
 
 import {SerialManager, Props, SerialEvent} from './types'
 import {BAUD_RATE, INTERFACE, VENDOR_ID, PRODUCT_ID} from './constants'
@@ -10,6 +11,7 @@ const SerialContext = createContext<SerialManager>({
   subscribe: () => {
     return {} as Subscription
   },
+  write: () => {},
 })
 
 export const SerialProvider: FC<Props> = (props) => {
@@ -24,6 +26,11 @@ export const SerialProvider: FC<Props> = (props) => {
     return {
       subscribe: (callback) => {
         return subject.current.subscribe(callback)
+      },
+      write: (value) => {
+        const buff = Buffer.from(value)
+
+        RNSerialport.writeBase64(buff.toString('base64'))
       },
     }
   }, [])

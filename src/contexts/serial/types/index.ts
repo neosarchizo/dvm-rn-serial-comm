@@ -16,4 +16,5 @@ export type SerialEventCallback = (event: SerialEvent) => void
 
 export interface SerialManager {
   subscribe: (callback: SerialEventCallback) => Subscription
+  write: (value: number[]) => void
 }
