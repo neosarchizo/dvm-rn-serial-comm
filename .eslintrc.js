@@ -31,6 +31,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-non-null-assertion': 'off',
+    quotes: ['error', 'single', {avoidEscape: true}],
     'react/prop-types': 'off', // In favor of strong typing - no need to dedupe
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
